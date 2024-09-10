@@ -1,101 +1,203 @@
-import argparse
 import json
-import re
+import os.path as osp
 from pathlib import Path
-from typing import Dict, List
 
 import nibabel as nib
 import numpy as np
+import torchio as tio
 from PIL import Image
+from tqdm import tqdm
 
 
-def convert_3d_data(
-    root_path: Path,
-    save_path: Path,
-    slice_dim: int,
-    ) -> None:
-    """Take in original 3D data for NeuroSAM and convert
-    it to the format expected by this repo.
+class AbdomenCTJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/AbdomenCT_1K')
+    name = "AbdomenCT"
+class AMOSJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/AMOS')
+    name = "AMOS"
+class BratsJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/BraTs2020')
+    name = "BRATS"
+class CovidCTJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/COVID_CT_Lung')
+    name = "CovidCT"
+class CTStrokeJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/CTStroke')
+    name = "CTStroke"
+class HealthyTotalBodyJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/Healthy-Total-Body CTs NIfTI Segmentations and Segmentation Organ Values spreadsheet')
+    name = "HealthyTotalBody"
+class ISLESJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/ISLES-2022')
+    name = "ISLES"
+class KitsJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/kits23')
+    name = "Kits"
+class KneeJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/KneeMRI')
+    name = "StanfordKnee"
+class LITSJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/LITS')
+    name = "LiTS"
+class LUNAJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/LUNA16')
+    name = "LUNA"
+class MMWHSJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/MM-WHS 2017 Dataset')
+    name = "MultiModalWholeHeart"
+class MSDJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/MSD')
+    name = "MedSamDecathlon"
+class CTORGJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/PKG - CT-ORG')
+    name = "CTOrgan"
+class UpennJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/PKG - UPENN-GBM-NIfTI')
+    name = "MRIGlioblastoma"
+class ProstateJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/Prostate MR Image Segmentation')
+    name = "ProstateMRI"
+class SegTHORJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/SegTHOR')
+    name = "SegThoracicOrgans"
+class TCIAPancreasJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/TCIA_pancreas_labels-02-05-2017')
+    name = "PancreasCt"
+class TotalSegmentatorJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/Totalsegmentator_dataset_v201')
+    name = "TotalSegmentator"
+class ONDRIJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/wmh_hab')
+    name = "ONDRI"
+class WORDJSONGenerator:
+    dir = Path('/home/arinaldi/project/aiconsgrp/data/WORD-V0.1.0')
+    name = "WORD"
 
-    The dataset should have an overall Training/ and Test/ dir.
-    Inside each of these folders there is an image/ and mask/ dir.
-    Inside each of these folders are image name dirs e.g., image0001/.
-    Inside each image dir there are .png slice files.
-    Inside each mask dir there are .npy binary mask files.
+DATASET_LIST = [
+    AbdomenCTJSONGenerator,
+    AMOSJSONGenerator,
+    BratsJSONGenerator,
+    CovidCTJSONGenerator,
+    CTStrokeJSONGenerator,
+    HealthyTotalBodyJSONGenerator,
+    ISLESJSONGenerator,
+    KitsJSONGenerator,
+    KneeJSONGenerator,
+    LITSJSONGenerator,
+    LUNAJSONGenerator,
+    MMWHSJSONGenerator,
+    MSDJSONGenerator,
+    CTORGJSONGenerator,
+    UpennJSONGenerator,
+    ProstateJSONGenerator,
+    SegTHORJSONGenerator,
+    TCIAPancreasJSONGenerator,
+    TotalSegmentatorJSONGenerator,
+    ONDRIJSONGenerator,
+    WORDJSONGenerator,
+]
 
 
-    :param root_path: Location of existing NeuroSam data.
-    :type root_path: Path
-    :param save_path: Location to save the converted data.
-    :type save_path: Path
-    """
+def main(args):
+    dt = args.dataset_type
+    slice_dim = args.slice_dim
 
-    assert root_path.exists(), f"Path {root_path} does not exist."
+    save_dir = Path("/scratch/scratch01/mggrp/arinaldi/data")
+    training_save_dir = save_dir / "Training"
+    training_save_dir_image = training_save_dir / "image"
+    training_save_dir_mask = training_save_dir / "mask"
+    testing_save_dir = save_dir / "Test"
+    testing_save_dir_image = testing_save_dir / "image"
+    testing_save_dir_mask = testing_save_dir / "mask"
+    validation_save_dir = save_dir / "Validation"
+    validation_save_dir_image = validation_save_dir / "image"
+    validation_save_dir_mask = validation_save_dir / "mask"
 
-    # Create the save path if it doesn't exist
-    save_path.mkdir(parents=True, exist_ok=True)
+    if dt == "Tr":
+        main_img_dir = training_save_dir_image
+        main_seg_dir = training_save_dir_mask
+    elif dt == "Ts":
+        main_img_dir = testing_save_dir_image
+        main_seg_dir = testing_save_dir_mask
+    elif dt == "Val":
+        main_img_dir = validation_save_dir_image
+        main_seg_dir = validation_save_dir_mask
 
-    # Create the Training/ and Test/ dirs
-    training_path = save_path / "Training"
-    test_path = save_path / "Test"
 
-    training_path.mkdir(parents=True, exist_ok=True)
-    test_path.mkdir(parents=True, exist_ok=True)
-
-    # Create the image/ and mask/ dirs
-    training_image_path = training_path / "image"
-    training_mask_path = training_path / "mask"
-
-    test_image_path = test_path / "image"
-    test_mask_path = test_path / "mask"
-
-    training_image_path.mkdir(parents=True, exist_ok=True)
-    training_mask_path.mkdir(parents=True, exist_ok=True)
-
-    test_image_path.mkdir(parents=True, exist_ok=True)
-    test_mask_path.mkdir(parents=True, exist_ok=True)
-
-    # grep all the json files
-    json_files = list(root_path.glob("*.json"))
-    json_files = [x for x in json_files if "overall" not in x.name]
-
-    # loop over json files
-    for json_file in json_files:
-
+    for dataset in DATASET_LIST:
         image_iter = 0
-        dataset_name = re.sub(r"\_[\S]+", "", json_file.stem).lower()
+        dataset_dir = dataset.dir
 
-        # Load the json file
-        with open(json_file, "r") as f:
-            data: List[Dict[str, str]] = json.load(f)
+        meta_info = json.load(open(osp.join(dataset_dir, "dataset.json")))
 
-        # Iterate files
-        for sample in data:
-            train_image_slice_dir = training_image_path / f"{dataset_name}{image_iter:06d}"
-            train_mask_slice_dir = training_mask_path / f"{dataset_name}{image_iter:06d}"
+        print(meta_info["name"], meta_info["modality"])
+        num_classes = len(meta_info["labels"]) - 1
+        print("num_classes:", num_classes, meta_info["labels"])
 
-            test_image_slice_dir = test_image_path / f"{dataset_name}{image_iter:06d}"
-            test_mask_slice_dir = test_mask_path / f"{dataset_name}{image_iter:06d}"
+        dataset_name = dataset.name
 
-            train_image_slice_dir.mkdir(parents=True, exist_ok=True)
-            train_mask_slice_dir.mkdir(parents=True, exist_ok=True)
+        data_list = meta_info[
+            {"Tr": "training", "Val": "validation", "Ts": "testing"}[dt]
+        ]
 
-            # test_image_slice_dir.mkdir(parents=True, exist_ok=True)
-            # test_mask_slice_dir.mkdir(parents=True, exist_ok=True)
+        if data_list is None:
+            continue
 
-            image_path = Path(sample["image"])
-            mask_path = Path(sample["label"])
+        # only get the unique values f the data_list
+        data_list = [(item["image"], item["seg"]) for item in data_list]
+        data_list = list(set(data_list))
 
-            image_path = root_path.parent.parent / image_path
-            mask_path = root_path.parent.parent / mask_path
+        for item in tqdm(data_list, desc=f"{dataset_name}"):
+
+            img, seg = item
+            # if dataset_name == "TotalSegmentator":
+            #     cls_name = (
+            #         Path(seg).parts[-1].split("_", maxsplit=1)[1].replace(".nii.gz", "")
+            #     )
+            # elif dataset_name == "MedSamDecathlon":
+            #     task = Path(seg).parts[-3]
+            #     cls_name = meta_info["labels"][task][str(seg_idx)].replace(" ", "_")
+            # elif dataset_name == "CovidCT":
+            #     task = Path(seg).parts[-2].split("_")[1]
+            #     cls_name = meta_info["labels"][task][str(seg_idx)].replace(" ", "_")
+            # elif dataset_name == "CTStroke":
+            #     task = Path(seg).parts[-2].split("_")[1]
+            #     cls_name = meta_info["labels"][task][str(seg_idx)].replace(" ", "_")
+            # else:
+            #     cls_name = meta_info["labels"][str(seg_idx)].replace(" ", "_")
+
+            # img_parent_folder = Path(img).parent.parts[-1]
+            # img_ext = (
+            #     img_parent_folder.split("_")[-1] if "_" in img_parent_folder else ""
+            # )
+
+            # seg_parent_folder = Path(seg).parent.parts[-1]
+            # seg_ext = (
+            #     seg_parent_folder.split("_")[-1] if "_" in seg_parent_folder else ""
+            # )
+
+            img_dir = main_img_dir / f"{dataset_name}{image_iter:06d}"
+            seg_dir = main_seg_dir / f"{dataset_name}{image_iter:06d}"
+
+            img_dir.mkdir(parents=True, exist_ok=True)
+            seg_dir.mkdir(parents=True, exist_ok=True)
 
             # Load the image and mask
-            image = nib.load(image_path)
+            image = nib.load(img)
             image_array = image.get_fdata()
-            mask = nib.load(mask_path)
+            mask = nib.load(seg)
             mask_array = mask.get_fdata()
 
-            x, y, z = image_array.shape
+            try:
+                if image_array.ndim == 4:
+                    image_array = image_array[:, :, :, 0]
+                
+                x, y, z = image_array.shape
+            except Exception as e:
+                print(f"Error: {e}")
+                print(f"image: {image_array.shape}, mask: {mask_array.shape}")
+                print(f"image file: {img}, mask file: {seg}")
+                exit(-1)
             
             if slice_dim == 0:
                 num_slices = x
@@ -107,12 +209,6 @@ def convert_3d_data(
             assert image_array.shape == mask_array.shape, \
                 f"Image and mask shapes do not match: {image_array.shape} vs {mask_array.shape}"
 
-            # Split the data into training and test
-            num_training_slices = int(num_slices * 0.7)
-            num_test_slices = num_slices - num_training_slices
-
-            # Save the training data
-            # for i in range(num_training_slices):
             for i in range(num_slices):
                 
                 if slice_dim == 0:
@@ -125,43 +221,30 @@ def convert_3d_data(
                     image_slice = image_array[:, :, i]
                     mask_slice = mask_array[:, :, i]
 
-                Image.fromarray(image_slice).convert("L").save(train_image_slice_dir / f"{i}.png")
-                np.save(train_mask_slice_dir / f"{i}.npy", mask_slice)
+                Image.fromarray(image_slice).convert("L").save(img_dir / f"{i}.png")
+                np.save(seg_dir / f"{i}.npy", mask_slice)
 
-            # Save the test data
-            # for i in range(num_training_slices, num_slices):
-
-            #     if slice_dim == 0:
-            #         image_slice = image_array[i, :, :]
-            #         mask_slice = mask_array[i, :, :]
-            #     elif slice_dim == 1:
-            #         image_slice = image_array[:, i, :]
-            #         mask_slice = mask_array[:, i, :]
-            #     elif slice_dim == 2:
-            #         image_slice = image_array[:, :, i]
-            #         mask_slice = mask_array[:, :, i]
-
-            #     Image.fromarray(image_slice).convert("L").save(test_image_slice_dir / f"{i}.png")
-            #     np.save(test_mask_slice_dir / f"{i}.npy", mask_slice)
-
-            print(f"Processed {train_image_slice_dir.name}")
-
+            tqdm.write(f"Saved {dataset_name}{image_iter:06d}")
             image_iter += 1
 
 
-
 if __name__ == "__main__":
+    import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root-path", type=str, required=True)
-    parser.add_argument("--save-path", type=str, required=True)
-    parser.add_argument("--slice-dim", type=int, default=2)
-
+    parser.add_argument(
+        "--dataset-type",
+        type=str,
+        choices=["Tr", "Val", "Ts"],
+        default="Tr",
+        help="Dataset type to convert.",
+    )
+    parser.add_argument(
+        "--slice-dim",
+        type=int,
+        default=2,
+        help="Dimension to slice the 3D image",
+    )
     args = parser.parse_args()
-    args = vars(args)
 
-    root_path = Path(args.get("root_path"))
-    save_path = Path(args.get("save_path"))
-    slice_dim = args.get("slice_dim")
-
-    convert_3d_data(root_path, save_path, slice_dim)
+    main(args)
