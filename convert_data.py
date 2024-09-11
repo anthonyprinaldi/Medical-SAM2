@@ -128,7 +128,8 @@ def main(args):
         image_iter = 0
         dataset_dir = dataset.dir
 
-        meta_info = json.load(open(osp.join(dataset_dir, "dataset.json")))
+        meta_info = json.load(open(osp.join(dataset_dir, "dataset.json"))) if \
+            dataset.name != "TotalSegmentator" else json.load(open(osp.join(dataset_dir, "dataset_medsam2.json")))
 
         print(meta_info["name"], meta_info["modality"])
         num_classes = len(meta_info["labels"]) - 1
@@ -147,7 +148,7 @@ def main(args):
         data_list = [(item["image"], item["seg"]) for item in data_list]
         data_list = list(set(data_list))
 
-        for item in tqdm(data_list, desc=f"{dataset_name}"):
+        for item in tqdm(data_list, desc=f"{dataset_name} - {len(data_list)} images"):
 
             img, seg = item
             # if dataset_name == "TotalSegmentator":
@@ -224,7 +225,6 @@ def main(args):
                 Image.fromarray(image_slice).convert("L").save(img_dir / f"{i}.png")
                 np.save(seg_dir / f"{i}.npy", mask_slice)
 
-            tqdm.write(f"Saved {dataset_name}{image_iter:06d}")
             image_iter += 1
 
 
