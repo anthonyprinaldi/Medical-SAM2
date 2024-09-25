@@ -30,7 +30,7 @@ class NEUROSAM(Dataset):
 
         # Set the data list for training
         self.name_list = [
-            x for x in (Path(data_path) / mode / "image").iterdir() if x.is_dir()
+            x.stem for x in (Path(data_path) / mode / "image").iterdir() if x.is_dir()
         ]
 
         # Set the basic information of the dataset
@@ -59,7 +59,7 @@ class NEUROSAM(Dataset):
         img_path: Path = self.data_path / self.mode / "image" / name
         mask_path: Path = self.data_path / self.mode / "mask" / name
         data_seg_3d_shape = np.load(mask_path / "0.npy").shape
-        num_frame = len(mask_path.iterdir())
+        num_frame = len([x for x in mask_path.iterdir()])
         data_seg_3d = np.zeros(data_seg_3d_shape + (num_frame,))
         
         for i in range(num_frame):
@@ -98,7 +98,7 @@ class NEUROSAM(Dataset):
 
         for frame_index in range(starting_frame, starting_frame + video_length):
             img = Image.open(
-                img_path / f"{frame_index + starting_frame_nonzero}.jpg"
+                img_path / f"{frame_index + starting_frame_nonzero}.png"
             ).convert("RGB")
             mask = data_seg_3d[..., frame_index]
             # mask = np.rot90(mask)
