@@ -4,7 +4,6 @@ from pathlib import Path
 
 import nibabel as nib
 import numpy as np
-import torchio as tio
 from PIL import Image
 from tqdm import tqdm
 
