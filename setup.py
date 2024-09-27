@@ -28,6 +28,10 @@ REQUIRED_PACKAGES = [
     "hydra-core>=1.3.2",
     "iopath>=0.1.10",
     "pillow>=10.4.0",
+    "einops>=0.8.0",
+    "monai>=1.3.2",
+    "nibabel>=5.2.1",
+    "tensorboardX>=2.6.2.2",
 ]
 
 EXTRA_PACKAGES = {
