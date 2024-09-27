@@ -47,10 +47,10 @@ def get_dataloader(args):
     elif args.dataset == 'neurosam':
         '''neurosam data'''
         neurosam_train_dataset = NEUROSAM(args, args.data_path, transform = None, transform_msk= None, mode = 'Training', prompt=args.prompt)
-        neurosam_test_dataset = NEUROSAM(args, args.data_path, transform = None, transform_msk= None, mode = 'Test', prompt=args.prompt)
+        neurosam_test_dataset = NEUROSAM(args, args.data_path, transform = None, transform_msk= None, mode = 'Validation', prompt=args.prompt)
 
         nice_train_loader = DataLoader(neurosam_train_dataset, batch_size=1, shuffle=True, num_workers=8, pin_memory=True)
-        nice_test_loader = DataLoader(neurosam_test_dataset, batch_size=1, shuffle=False, num_workers=1, pin_memory=True)
+        nice_test_loader = DataLoader(neurosam_test_dataset, batch_size=1, shuffle=False, num_workers=2, pin_memory=True)
         '''end'''
 
     else:
