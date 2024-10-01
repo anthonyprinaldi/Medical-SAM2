@@ -103,7 +103,12 @@ class NEUROSAM(Dataset):
             img = Image.open(
                 img_path / f"{frame_index + starting_frame_nonzero}.png"
             ).convert("RGB")
-            mask = data_seg_3d[..., frame_index]
+            try:
+                mask = data_seg_3d[..., frame_index]
+            except Exception as e:
+                print(f"Error: {e}")
+                print(img_path / f"{frame_index + starting_frame_nonzero}.png")
+                print(f"name: {name}")
             # mask = np.rot90(mask)
             obj_list = np.unique(mask[mask > 0])
             diff_obj_mask_dict = {}
