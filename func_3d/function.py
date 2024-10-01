@@ -192,6 +192,7 @@ def train_sam(args, net: nn.Module, optimizer1, optimizer2, train_loader,
                 net.reset_state(train_state)
 
             pbar.update()
+            torch.cuda.empty_cache()
 
     return epoch_loss / len(train_loader), epoch_prompt_loss / len(train_loader), epoch_non_prompt_loss / len(train_loader)
 
