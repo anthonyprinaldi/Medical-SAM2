@@ -79,6 +79,9 @@ class NEUROSAM(Dataset):
                 break
         
         num_frame = data_seg_3d.shape[-1]
+        if num_frame < self.video_length:
+            print(f"Skipping {name} due to insufficient frames {num_frame}")
+            return self.__getitem__(np.random.randint(0, len(self.name_list)))
 
         if self.video_length is None:
             video_length = int(num_frame / 4)
