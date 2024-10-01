@@ -9,67 +9,67 @@ from tqdm import tqdm
 
 
 class AbdomenCTJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/AbdomenCT_1K')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/AbdomenCT_1K')
     name = "AbdomenCT"
 class AMOSJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/AMOS')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/AMOS')
     name = "AMOS"
 class BratsJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/BraTs2020')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/BraTs2020')
     name = "BRATS"
 class CovidCTJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/COVID_CT_Lung')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/COVID_CT_Lung')
     name = "CovidCT"
 class CTStrokeJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/CTStroke')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/CTStroke')
     name = "CTStroke"
 class HealthyTotalBodyJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/Healthy-Total-Body CTs NIfTI Segmentations and Segmentation Organ Values spreadsheet')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/Healthy-Total-Body CTs NIfTI Segmentations and Segmentation Organ Values spreadsheet')
     name = "HealthyTotalBody"
 class ISLESJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/ISLES-2022')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/ISLES-2022')
     name = "ISLES"
 class KitsJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/kits23')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/kits23')
     name = "Kits"
 class KneeJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/KneeMRI')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/KneeMRI')
     name = "StanfordKnee"
 class LITSJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/LITS')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/LITS')
     name = "LiTS"
 class LUNAJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/LUNA16')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/LUNA16')
     name = "LUNA"
 class MMWHSJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/MM-WHS 2017 Dataset')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/MM-WHS 2017 Dataset')
     name = "MultiModalWholeHeart"
 class MSDJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/MSD')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/MSD')
     name = "MedSamDecathlon"
 class CTORGJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/PKG - CT-ORG')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/PKG - CT-ORG')
     name = "CTOrgan"
 class UpennJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/PKG - UPENN-GBM-NIfTI')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/PKG - UPENN-GBM-NIfTI')
     name = "MRIGlioblastoma"
 class ProstateJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/Prostate MR Image Segmentation')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/Prostate MR Image Segmentation')
     name = "ProstateMRI"
 class SegTHORJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/SegTHOR')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/SegTHOR')
     name = "SegThoracicOrgans"
 class TCIAPancreasJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/TCIA_pancreas_labels-02-05-2017')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/TCIA_pancreas_labels-02-05-2017')
     name = "PancreasCt"
 class TotalSegmentatorJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/Totalsegmentator_dataset_v201')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/Totalsegmentator_dataset_v201')
     name = "TotalSegmentator"
 class ONDRIJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/wmh_hab')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/wmh_hab')
     name = "ONDRI"
 class WORDJSONGenerator:
-    dir = Path('/home/arinaldi/project/aiconsgrp/data/WORD-V0.1.0')
+    dir = Path('/home/arinaldi/projects/rrg-mgoubran/arinaldi/data/WORD-V0.1.0')
     name = "WORD"
 
 DATASET_LIST = [
@@ -101,7 +101,7 @@ def main(args):
     dt = args.dataset_type
     slice_dim = args.slice_dim
 
-    save_dir = Path("/scratch/scratch01/mggrp/arinaldi/data")
+    save_dir = Path("/home/arinaldi/projects/rrg-mgoubran/arinaldi/SliceData")
     training_save_dir = save_dir / "Training"
     training_save_dir_image = training_save_dir / "image"
     training_save_dir_mask = training_save_dir / "mask"
