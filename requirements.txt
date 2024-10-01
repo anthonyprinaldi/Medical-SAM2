@@ -1,0 +1,7 @@
+tensorboardX
+einops
+monai
+nibabel
+matplotlib
+scikit-image
+tqdm
